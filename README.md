@@ -258,7 +258,150 @@ namespace WebApplication1.Controllers
   }
 }
 
+```
 
+
+### Dockterising the project 
+
+First started with the front end, the main problem I found was that I could not reach the browser. The cause was that I needed to specify in the `CMD ["ng", "serve", "--host", "0.0.0.0"]` that the host was `0.0.0.0`.
+
+Also made some minor changes in the `package.json`, specifically to the `start` script:
+
+```json
+"start": "ng serve --host 0.0.0.0 --port 4200",
+
+```dockerfile
+
+# Need node to run angular 
+FROM node:16-alpine3.11 as angular 
+
+# Reference to our working dir 
+WORKDIR /app
+
+# We make an copy of all the files in the directory 
+COPY . .
+
+# We install the needed 
+RUN npm install 
+RUN npm build 
+
+# Gone use an other image, but swithc to the working directory 
+FROM httpd:alpine3.15
+
+# default where apache saves the html files... , we change to there 
+WORKDIR /usr/local/apache2/htdocs
+
+EXPOSE 4200
+# We gone copy our angular files from the image to there 
+COPY --from=angular /app/dist/my-first-app .
+
+CMD ["ng", "serve", "--host", "0.0.0.0"]
 
 ```
 
+### Backend API
+
+The virtualisation initializes, but I can't reach the backend URL. After checking the ports and considering different other reasons, I wonder if the mistake is not in the Dockerfile but in the Docker Compose file.
+
+Docker-compose of the full project: 
+
+```yml
+
+version: '3.8'
+services:
+  backend:
+    build:
+      context: ./API
+      dockerfile: Dockerfile
+    container_name: dotnet-api
+    ports:
+      - "8000:8000" # Maps host port 8000 to container port 8080 (HTTP)
+      - "7296:8081" # Maps host port 7296 to container port 8081 (HTTPS)
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=database;Database=mydb;User=Login;Password=Login1234;
+    
+    depends_on:
+      - database
+    networks:
+      - app-network
+
+  database:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: Login
+      MYSQL_PASSWORD: Login1234
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  frontend:
+    image: node:18-alpine
+    container_name: angular-frontend
+    build:
+      context: ./my-first-app
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./my-first-app:/app
+    working_dir: /app
+    command: sh -c "npm install && npm start"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
+
+```
+
+Dockerfile for the backend
+
+```dockerfile
+# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+# This stage is used when running from VS in fast mode (Default for Debug configuration)
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
+WORKDIR /app
+
+EXPOSE 8080
+EXPOSE 8081
+
+# This stage is used to build the service project
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["WebApplication1/WebApplication1.csproj", "WebApplication1/"]
+RUN dotnet restore "./WebApplication1/WebApplication1.csproj"
+COPY . .
+WORKDIR "/src/WebApplication1"
+RUN dotnet build "./WebApplication1.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# This stage is used to publish the service project to be copied to the final stage
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./WebApplication1.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+RUN ls -al
+ENTRYPOINT ["dotnet", "WebApplication1.dll"]
+
+```
