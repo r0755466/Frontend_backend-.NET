@@ -6,14 +6,11 @@ services:
       dockerfile: Dockerfile
     container_name: dotnet-api
     ports:
-      - "8000:8000" # Maps host port 8000 to container port 8080 (HTTP)
-      - "7296:8081" # Maps host port 7296 to container port 8081 (HTTPS)
+      - "8000:8000"
+      - "7296:8081"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=database;Database=mydb;User=Login;Password=Login1234;
-    
-
-
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ConnectionStrings__DefaultConnection=${CONNECTION_STRINGS_DEFAULT_CONNECTION}
     depends_on:
       - database
     networks:
@@ -24,9 +21,9 @@ services:
     container_name: mysql-db
     restart: always
     environment:
-      MYSQL_DATABASE: mydb
-      MYSQL_USER: Login
-      MYSQL_PASSWORD: Login1234
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
     ports:
       - "3306:3306"
