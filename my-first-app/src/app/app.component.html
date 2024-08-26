@@ -1,17 +1,74 @@
+<!-- Spacing -->
+<div style="margin: 50px 0;"></div>
 
-<div style="margin:100px"></div>
-<h2 style="background-color: aqua; text-align: center;"> Todo app</h2>
+<!-- Todo App Section -->
+<div class="container">
+  <h2 class="bg-info text-white text-center py-2">Todo App</h2>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/home" routerLinkActive="active">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/tasks" routerLinkActive="active">Tasks</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/dashboards" routerLinkActive="active">Dashboards</a>
+          </li>
+         
+        </ul>
+      </div>
+    </div>
+  </nav>
 
 
-<!-- ngModel does an two way binding-->
-<input type="text" [(ngModel)]="newtask"><button (click)="add_task()">Add task</button>
 
-<!-- Using ngFor Angular, to go true all tasks to display them-->
+  <!-- Playing with an Carusel.. -->
+  <div id="carouselExampleIndicators" class="carousel slide mx-auto p-2">
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner" >
+      <div class="carousel-item active">
+        <img src="https://cdn.pixabay.com/photo/2020/02/17/07/39/pen-4855775_1280.jpg" class="d-block w-100" alt="Task">
+      </div>
+      <div class="carousel-item">
+        <img src="https://cdn.pixabay.com/photo/2020/05/30/09/53/todo-lists-5238324_960_720.jpg 1x, https://cdn.pixabay.com/photo/2020/05/30/09/53/todo-lists-5238324_1280.jpg" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="https://cdn.pixabay.com/photo/2020/10/09/20/09/library-5641389_960_720.jpg 1x, https://cdn.pixabay.com/photo/2020/10/09/20/09/library-5641389_1280.jpg" class="d-block w-100" alt="...">
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
 
-<p *ngFor="let item of tasks" >
-  &diams;{{item.task}}
-  <Button (click)="delete_task(item.id)">Delete task</Button>
-</p>
+  <!-- Show here the components html value -->
+  <router-outlet>
 
+  </router-outlet>
 
-
+  
+</div>

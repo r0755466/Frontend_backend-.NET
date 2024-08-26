@@ -22,9 +22,13 @@ The frontend is powered by Angular 18 and Node.js, which is used to translate na
 
 ---
 
-## Project Setup and Steps
+## Features as goal
+- **Drag and drop using :** [Angular 18](https://www.npmjs.com/package/ngx-drag-drop)
 
+
+## Project Setup and Steps
 ### Angular CLI Setup
+
 
 We start by installing Angular CLI globally using Node.js:
 

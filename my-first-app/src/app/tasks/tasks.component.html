@@ -1,0 +1,28 @@
+<div class="container">
+ 
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Enter a new task"
+        [(ngModel)]="newtask"
+      />
+      <button class="btn btn-primary" (click)="add_task()">Add Task</button>
+    </div>
+  
+  
+    <div class="list-group">
+      <p
+        *ngFor="let item of tasks"
+        class="list-group-item d-flex justify-content-between align-items-center"
+      >
+        &diams; {{ item.task }}
+        <button class="btn btn-danger btn-sm" (click)="delete_task(item.id)">
+          Delete
+        </button>
+      </p>
+    </div>
+  
+  
+    
+  </div>

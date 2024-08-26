@@ -77,7 +77,7 @@ namespace WebApplication1.Controllers
       }
     }
 
-    [HttpDelete("delete_tasks")]
+    [HttpPost("delete_tasks")]
     public JsonResult DeleteTasks([FromForm] string id)
     {
       string query = "delete from todo where id=@id ";
